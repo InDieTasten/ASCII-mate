@@ -1,5 +1,7 @@
 Term = {}
-Term.backlog = ""
+Term.internalInputBuffer = ""
+Term.internalOutputBuffer = ""
+
 --- Enters raw mode for the terminal
 --- This will disable echo and line buffering
 --- It will also switch to the alternate screen buffer
@@ -33,13 +35,13 @@ function Term.getCursorPosition()
         if #readBack > 0 or current == "\27" then
             readBack = readBack .. current
         else
-            Term.backlog = Term.backlog .. current
+            Term.internalInputBuffer = Term.internalInputBuffer .. current
         end
         if current == "R" then
             break
         end
         assert(#readBack < 1000, "Readback too long")
-        assert(#Term.backlog < 1000, "Backlog too long")
+        assert(#Term.internalInputBuffer < 1000, "Backlog too long")
     end
 
     local row = tonumber(string.match(readBack, "%[(%d+);"))
@@ -58,9 +60,9 @@ end
 function Term.read(n)
     assert(n > 0, "n must be greater than 0")
     local input = ""
-    if #Term.backlog > 0 then
-        input = input .. string.sub(Term.backlog, 1, n)
-        Term.backlog = string.sub(Term.backlog, n + 1)
+    if #Term.internalInputBuffer > 0 then
+        input = input .. string.sub(Term.internalInputBuffer, 1, n)
+        Term.internalInputBuffer = string.sub(Term.internalInputBuffer, n + 1)
     end
     if #input < n then
         input = input .. io.read(n - #input)
@@ -77,7 +79,7 @@ function Term.readWithTimeout(n, timeout)
     assert(n > 0, "n must be greater than 0")
 
     -- If we have enough characters in the backlog, we can return them immediately.
-    if #Term.backlog >= n then
+    if #Term.internalInputBuffer >= n then
         return Term.read(n)
     end
 
@@ -93,20 +95,37 @@ function Term.readWithTimeout(n, timeout)
         if #readBack > 0 or current == "\27" then
             readBack = readBack .. current
         else
-            Term.backlog = Term.backlog .. current
+            Term.internalInputBuffer = Term.internalInputBuffer .. current
         end
         if current == "R" then
             break
         end
         assert(#readBack < 1000, "Readback too long")
-        assert(#Term.backlog < 1000, "Backlog too long")
+        assert(#Term.internalInputBuffer < 1000, "Backlog too long")
     end
 
-    if #Term.backlog < n then
+    if #Term.internalInputBuffer < n then
         return nil
     else
         return Term.read(n)
     end
+end
+
+--- Allows to write to the output buffer without flushing it.
+--- Useful to ensure that an entire rerenderd frame is queued in the buffer before flushing to the terminal.
+--- Also, intermediate terminal requests can be made while building the frame without interfering with the output.
+--- Be sure to call Term.flush() after you are done writing to the buffer.
+--- @param str string: string to write to the output buffer
+function Term.write(str)
+    Term.internalOutputBuffer = Term.internalOutputBuffer .. str
+end
+
+--- Flushes the output buffer to the terminal.
+--- This will write the entire buffer to the terminal and flush it.
+function Term.flush()
+    io.write(Term.internalOutputBuffer)
+    io.flush()
+    Term.internalOutputBuffer = ""
 end
 
 return Term
