@@ -16,7 +16,7 @@ function main()
         if key == "q" then
             break
         end
-        print("Pressed key: " .. key.."\r")
+        print("Pressed key code: " .. string.byte(key).."\r")
     end
 end
 
