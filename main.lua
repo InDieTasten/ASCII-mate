@@ -1,25 +1,33 @@
 require("lib/term")
 
-term.enterRawMode()
-function main()
+Term.enterRawMode()
+local function main()
     while true do
-        local key = io.read(1)
-        if key == "q" then
-            break
+        local key = Term.readWithTimeout(1, 0.05)
+        if key then
+            io.write("Key: " .. string.byte(key) .. "\r\n")
+            if key == "q" then
+                break
+            elseif key == "s" then
+                local x, y = Term.getCursorPosition()
+                io.write("Cursor position: " .. x .. ", " .. y .. "\r\n")
+            end
+        else
+            io.write("Rerender me\r\n")
         end
-        print("Pressed key code: " .. string.byte(key).."\r")
+        io.flush()
     end
 end
 
-local status = xpcall(main, function (err)
-    term.leaveRawMode()
-    traceback = debug.traceback()
-    io.stderr:write(err.."\n"..traceback.."\n")
+local status = xpcall(main, function(err)
+    Term.leaveRawMode()
+    local traceback = debug.traceback()
+    io.stderr:write(err .. "\n" .. traceback .. "\n")
     if os.getenv("DEBUG") == "1" then
         debug.debug()
     end
 end)
 
 if status then
-    term.leaveRawMode()
+    Term.leaveRawMode()
 end
