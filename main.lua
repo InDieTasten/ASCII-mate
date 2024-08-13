@@ -1,15 +1,6 @@
-function enterRawMode()
-    os.execute("/bin/stty raw")
-    os.execute("/bin/stty -echo")
-    os.execute("/bin/tput smcup")
-end
-function leaveRawMode()
-    os.execute("/bin/tput rmcup")
-    os.execute("/bin/stty echo")
-    os.execute("/bin/stty sane")
-end
+require("lib/term")
 
-enterRawMode()
+term.enterRawMode()
 function main()
     while true do
         local key = io.read(1)
@@ -21,7 +12,7 @@ function main()
 end
 
 local status = xpcall(main, function (err)
-    leaveRawMode()
+    term.leaveRawMode()
     traceback = debug.traceback()
     io.stderr:write(err.."\n"..traceback.."\n")
     if os.getenv("DEBUG") == "1" then
@@ -30,5 +21,5 @@ local status = xpcall(main, function (err)
 end)
 
 if status then
-    leaveRawMode()
+    term.leaveRawMode()
 end
