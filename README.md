@@ -16,9 +16,9 @@ luajit main.lua
 
 ## Planned features
 - [x] General terminal setup and cleanup with alternate screen buffer
+- [ ] Mouse support
 - [ ] Keyboard navigation
 - [ ] Saving and loading ascii art
-- [ ] Mouse support
 - [ ] Line tool
 - [ ] Rectangle tool
 - [ ] Circle tool

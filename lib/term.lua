@@ -100,6 +100,14 @@ function Term.readWithTimeout(n, timeout)
         if current == "R" then
             break
         end
+        if current == "M" or current == "m" then
+            local mode = tonumber(string.match(readBack, "^\27%[<(%d+);%d+;%d+[Mm]$")) or "undetected"
+            local x = tonumber(string.match(readBack, "^\27%[<%d+;(%d+);%d+[Mm]$")) or "undetected"
+            local y = tonumber(string.match(readBack, "^\27%[<%d+;%d+;(%d+)[Mm]$")) or "undetected"
+            Term.write("Mouse Event: \"" ..
+                string.sub(readBack, 2) .. "\" Decoded mode: " .. mode .. " x: " .. x .. " y: " .. y .. "\n\r")
+            readBack = ""
+        end
         assert(#readBack < 1000, "Readback too long")
         assert(#Term.internalInputBuffer < 1000, "Backlog too long")
     end
@@ -109,6 +117,24 @@ function Term.readWithTimeout(n, timeout)
     else
         return Term.read(n)
     end
+end
+
+function Term.enableMouseEvents()
+    Term.write("\27[?1000h")
+    Term.write("\27[?1002h")
+    Term.write("\27[?1003h")
+    Term.write("\27[?1015h")
+    Term.write("\27[?1006h")
+    Term.flush()
+end
+
+function Term.disableMouseEvents()
+    Term.write("\27[?1000l")
+    Term.write("\27[?1002l")
+    Term.write("\27[?1003l")
+    Term.write("\27[?1015l")
+    Term.write("\27[?1006l")
+    Term.flush()
 end
 
 --- Allows to write to the output buffer without flushing it.

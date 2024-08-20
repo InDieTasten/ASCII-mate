@@ -1,6 +1,7 @@
 require("lib/term")
 
 Term.enterRawMode()
+Term.enableMouseEvents()
 local function main()
     while true do
         local key = Term.readWithTimeout(1, 0.05)
@@ -10,17 +11,17 @@ local function main()
                 break
             elseif key == "s" then
                 local x, y = Term.getCursorPosition()
-                io.write("Cursor position: " .. x .. ", " .. y .. "\r\n")
+                Term.write("Cursor position: " .. x .. ", " .. y .. "\r\n")
             end
-        else
-            io.write("Rerender me\r\n")
         end
-        io.flush()
+        Term.flush()
     end
 end
 
 local status = xpcall(main, function(err)
+    Term.flush()
     Term.leaveRawMode()
+    Term.disableMouseEvents()
     local traceback = debug.traceback()
     io.stderr:write(err .. "\n" .. traceback .. "\n")
     if os.getenv("DEBUG") == "1" then
@@ -29,5 +30,7 @@ local status = xpcall(main, function(err)
 end)
 
 if status then
+    Term.flush()
     Term.leaveRawMode()
+    Term.disableMouseEvents()
 end
