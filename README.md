@@ -2,9 +2,9 @@
 A CLI tool with mouse support for drawing ascii art and animations
 
 ## Prerequisites
-- /bin/stty
-- /bin/tput
-- /bin/sleep
+- /bin/stty (exists in pretty much all posix systems)
+- /bin/tput (often packaged as part of ncurses package, eg. `apk add ncurses`)
+- /bin/sleep (exists in pretty much all posix systems)
 - luajit or lua
 
 ## Usage
