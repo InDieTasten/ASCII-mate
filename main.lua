@@ -4,7 +4,7 @@ Term.enterRawMode()
 Term.enableMouseEvents()
 local function main()
     while true do
-        local key = Term.readWithTimeout(1, 0.05)
+        local key = Term.readImmediate(1)
         if key then
             io.write("Key: " .. string.byte(key) .. "\r\n")
             if key == "q" then

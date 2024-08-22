@@ -72,12 +72,10 @@ function Term.read(n)
     return input
 end
 
---- Reads n characters from the stdin with a timeout.
---- This will delay the input by the timeout duration.
+--- Reads n characters from the stdin, but return nil immediately, if not enough input is present.
 --- @param n number: number of characters to read
---- @param timeout number: in seconds
 --- @return string? input: input read from string, or nil, if we ran into the specified timeout
-function Term.readWithTimeout(n, timeout)
+function Term.readImmediate(n)
     assert(n > 0, "n must be greater than 0")
 
     -- If we have enough characters in the backlog, we can return them immediately.
@@ -85,8 +83,6 @@ function Term.readWithTimeout(n, timeout)
         return Term.read(n)
     end
 
-    -- Here we wait for the timeout to expire. This is the time frame in which users can queue up input.
-    os.execute("/bin/sleep " .. timeout)
     -- Before we try to read form the input buffer, we need to make sure we can receive something immediately, if the user has not queued anything up.
     -- We use the cursor position request for this.
     io.write("\27[6n")
