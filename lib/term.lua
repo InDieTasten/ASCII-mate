@@ -22,6 +22,17 @@ function Term.leaveRawMode()
     os.execute("/bin/stty sane")
 end
 
+function Term.clear()
+    Term.write("\27[2J")
+end
+
+--- Sets the cursor position to the specified coordinates
+--- @param x number: X position of cursor (0 indexed)
+--- @param y number: Y position of cursor (0 indexed)
+function Term.setCursorPosition(x, y)
+    Term.write("\27[" .. y + 1 .. ";" .. x + 1 .. "H")
+end
+
 --- Requests the cursor position from the terminal.
 --- Terminal will respond with a sequence like `\27[<row>;<col>R`.
 --- We capture the response from stdin and parse it.

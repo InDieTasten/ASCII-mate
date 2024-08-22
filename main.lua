@@ -1,36 +1,20 @@
 require("lib/term")
+require("lib/luther")
 
-Term.enterRawMode()
-Term.enableMouseEvents()
-local function main()
-    while true do
-        local key = Term.readImmediate(1)
-        if key then
-            io.write("Key: " .. string.byte(key) .. "\r\n")
-            if key == "q" then
-                break
-            elseif key == "s" then
-                local x, y = Term.getCursorPosition()
-                Term.write("Cursor position: " .. x .. ", " .. y .. "\r\n")
-            end
-        end
-        Term.flush()
-    end
+local function draw()
+    Term.write("Hello, world!")
 end
 
-local status = xpcall(main, function(err)
+local function handle(event)
+    event = event or "none"
+    Term.write("Event: " .. event)
     Term.flush()
-    Term.leaveRawMode()
-    Term.disableMouseEvents()
-    local traceback = debug.traceback()
-    io.stderr:write(err .. "\n" .. traceback .. "\n")
-    if os.getenv("DEBUG") == "1" then
-        debug.debug()
+    os.execute("sleep 1")
+    if event == "q" then
+        return false
     end
-end)
 
-if status then
-    Term.flush()
-    Term.leaveRawMode()
-    Term.disableMouseEvents()
+    return true
 end
+
+Luther.run(draw, handle)
