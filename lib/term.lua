@@ -8,14 +8,16 @@ Term.internalOutputBuffer = ""
 function Term.enterRawMode()
     os.execute("/bin/stty raw")
     os.execute("/bin/stty -echo")
-    os.execute("/bin/tput smcup")
+    io.write("\27[?1049h")
+    io.flush()
 end
 
 --- Leaves raw mode for the terminal
 --- This will re-enable echo and line buffering
 --- It will also switch back to the main screen buffer
 function Term.leaveRawMode()
-    os.execute("/bin/tput rmcup")
+    io.write("\27[?1049l")
+    io.flush()
     os.execute("/bin/stty echo")
     os.execute("/bin/stty sane")
 end
