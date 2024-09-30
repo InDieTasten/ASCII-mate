@@ -38,10 +38,15 @@ function Term.runApp(updateFunction, renderFunction)
     end
 end
 
+--- Clears the terminal screen
+--- This will clear the entire screen
 function Term.clear()
     io.write("\27[2J")
 end
 
+--- Sets the cursor position to the specified coordinates
+--- @param x number: X position of cursor (1 indexed)
+--- @param y number: Y position of cursor (1 indexed)
 function Term.setCursorPos(x, y)
     io.write("\27[" .. tostring(y) .. ";" .. tostring(x) .. "H")
 end
