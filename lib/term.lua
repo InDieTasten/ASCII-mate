@@ -42,6 +42,10 @@ function Term.clear()
     io.write("\27[2J")
 end
 
+function Term.setCursorPos(x, y)
+    io.write("\27[" .. tostring(y) .. ";" .. tostring(x) .. "H")
+end
+
 --- Enters raw mode for the terminal
 --- This will disable echo and line buffering
 --- It will also switch to the alternate screen buffer

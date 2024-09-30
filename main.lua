@@ -21,7 +21,7 @@ end
 
 local function render()
     Term.clear()
-    --Term.setCursorPos(1, 1)
+    Term.setCursorPos(1, 1)
     Term.write("State: " .. tostring(state) .. "\n\r")
     Term.flush()
 end
