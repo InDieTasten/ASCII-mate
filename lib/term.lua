@@ -2,17 +2,41 @@ Term = {}
 Term.internalInputBuffer = ""
 Term.internalOutputBuffer = ""
 
+function Term.parseInput(inputText)
+    local parsedInputs = {}
+    if inputText == nil then
+        return parsedInputs
+    end
+    for i = 1, #inputText do
+        local char = inputText:sub(i, i)
+        table.insert(parsedInputs, { "raw", char })
+        if (string.byte(char) >= 32 and string.byte(char) <= 126) then
+            table.insert(parsedInputs, { "char", char })
+        end
+        local button, x, y, action = inputText:sub(i):match("^\27%[<(%d+);(%d+);(%d+)([Mm])")
+        if button then
+            table.insert(parsedInputs, { "mouse", tonumber(button), tonumber(x), tonumber(y), action })
+        end
+        if (string.byte(char) == 27) then
+            table.insert(parsedInputs, { "esc", char })
+        end
+    end
+    return parsedInputs
+end
+
 function Term.runApp(updateFunction, renderFunction)
     Term.enterRawMode()
     Term.enableMouseEvents()
     local function main()
         while true do
-            local input = Term.readWithTimeout(1, 0.05)
+            local inputText = Term.readWithTimeout(1, 0.05)
             if #Term.internalInputBuffer > 0 then
-                input = input .. Term.read(#Term.internalInputBuffer)
+                inputText = inputText .. Term.read(#Term.internalInputBuffer)
             end
 
-            if not updateFunction(input) then
+            local parsedInputs = Term.parseInput(inputText)
+
+            if not updateFunction(parsedInputs) then
                 break
             end
 
@@ -140,26 +164,24 @@ function Term.readWithTimeout(n, timeout)
     -- We use the cursor position request for this.
     io.write("\27[6n")
     io.flush()
-    local readBack = ""
+    local escapedBuffer = ""
     while true do
         local current = io.read(1)
-        if #readBack > 0 or current == "\27" then
-            readBack = readBack .. current
+        if #escapedBuffer > 0 or current == "\27" then
+            escapedBuffer = escapedBuffer .. current
         else
             Term.internalInputBuffer = Term.internalInputBuffer .. current
         end
-        if current == "R" then
+        if #escapedBuffer > 0 and current == "R" then
+            -- fully received response from cursor position request
             break
         end
-        if current == "M" or current == "m" then
-            local mode = tonumber(string.match(readBack, "^\27%[<(%d+);%d+;%d+[Mm]$")) or "undetected"
-            local x = tonumber(string.match(readBack, "^\27%[<%d+;(%d+);%d+[Mm]$")) or "undetected"
-            local y = tonumber(string.match(readBack, "^\27%[<%d+;%d+;(%d+)[Mm]$")) or "undetected"
-            Term.write("Mouse Event: \"" ..
-                string.sub(readBack, 2) .. "\" Decoded mode: " .. mode .. " x: " .. x .. " y: " .. y .. "\n\r")
-            readBack = ""
+        if #escapedBuffer > 0 and (current == "M" or current == "m") then
+            -- received mouse event
+            Term.internalInputBuffer = Term.internalInputBuffer .. escapedBuffer
+            escapedBuffer = ""
         end
-        assert(#readBack < 1000, "Readback too long")
+        assert(#escapedBuffer < 1000, "Readback too long")
         assert(#Term.internalInputBuffer < 1000, "Backlog too long")
     end
 
