@@ -38,6 +38,10 @@ function Term.runApp(updateFunction, renderFunction)
     end
 end
 
+function Term.clear()
+    io.write("\27[2J")
+end
+
 --- Enters raw mode for the terminal
 --- This will disable echo and line buffering
 --- It will also switch to the alternate screen buffer

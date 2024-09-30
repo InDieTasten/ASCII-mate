@@ -20,7 +20,7 @@ local function update(input)
 end
 
 local function render()
-    --Term.clear()
+    Term.clear()
     --Term.setCursorPos(1, 1)
     Term.write("State: " .. tostring(state) .. "\n\r")
     Term.flush()
