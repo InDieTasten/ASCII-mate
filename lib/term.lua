@@ -2,6 +2,42 @@ Term = {}
 Term.internalInputBuffer = ""
 Term.internalOutputBuffer = ""
 
+function Term.runApp(updateFunction, renderFunction)
+    Term.enterRawMode()
+    Term.enableMouseEvents()
+    local function main()
+        while true do
+            local input = Term.readWithTimeout(1, 0.05)
+            if #Term.internalInputBuffer > 0 then
+                input = input .. Term.read(#Term.internalInputBuffer)
+            end
+
+            if not updateFunction(input) then
+                break
+            end
+
+            renderFunction()
+        end
+    end
+
+    local status = xpcall(main, function(err)
+        Term.flush()
+        Term.leaveRawMode()
+        Term.disableMouseEvents()
+        local traceback = debug.traceback()
+        io.stderr:write(err .. "\n" .. traceback .. "\n")
+        if os.getenv("DEBUG") == "1" then
+            debug.debug()
+        end
+    end)
+
+    if status then
+        Term.flush()
+        Term.leaveRawMode()
+        Term.disableMouseEvents()
+    end
+end
+
 --- Enters raw mode for the terminal
 --- This will disable echo and line buffering
 --- It will also switch to the alternate screen buffer
