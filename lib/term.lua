@@ -63,6 +63,8 @@ function Term.parseInput(inputText)
         else
             if (string.byte(char) >= 32 and string.byte(char) <= 126) then
                 table.insert(parsedInputs, { type = "char", char = char })
+            else
+                table.insert(parsedInputs, { type = "raw", hex = string.format("%02X", string.byte(char)) })
             end
             i = i + 1
         end
@@ -219,8 +221,8 @@ function Term.readWithTimeout(n, timeout)
             -- fully received response from cursor position request
             break
         end
-        if #escapedBuffer > 0 and (current == "M" or current == "m") then
-            -- received mouse event
+        if #escapedBuffer > 0 and string.find("MmABCDEFGH~", current, 1, true) then
+            -- received ansi control sequence
             Term.internalInputBuffer = Term.internalInputBuffer .. escapedBuffer
             escapedBuffer = ""
         end
