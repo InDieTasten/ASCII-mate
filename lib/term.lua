@@ -2,23 +2,69 @@ Term = {}
 Term.internalInputBuffer = ""
 Term.internalOutputBuffer = ""
 
+--- Decodes mouse scroll, move, press and release events from xterm
+--- according to DECSET 1006
+function Term.decodeMouseEvent(functionalCode, x, y, action)
+    local eventType
+    local mods = {}
+    if action == "m" then
+        eventType = "mouse_release"
+    elseif action == "M" then
+        eventType = "mouse_press"
+    end
+
+    if functionalCode >= 64 then
+        eventType = "mouse_scroll"
+        functionalCode = functionalCode - 64
+    elseif functionalCode >= 32 then
+        eventType = "mouse_move"
+        functionalCode = functionalCode - 32
+    end
+
+    if functionalCode >= 16 then
+        mods.ctrl = true
+        functionalCode = functionalCode - 16
+    end
+    if functionalCode >= 8 then
+        mods.alt = true
+        functionalCode = functionalCode - 8
+    end
+    if functionalCode >= 4 then
+        mods.shift = true
+        functionalCode = functionalCode - 4
+    end
+
+    local button = functionalCode
+    if eventType == "mouse_scroll" then
+        if functionalCode == 0 then
+            return { type = eventType, x = x, y = y, mods = mods, dir = "up" }
+        elseif functionalCode == 1 then
+            return { type = eventType, x = x, y = y, mods = mods, dir = "down" }
+        end
+    elseif eventType == "mouse_move" and button == 3 then
+        button = nil
+    end
+
+    return { type = eventType, x = x, y = y, mods = mods, button = button }
+end
+
 function Term.parseInput(inputText)
     local parsedInputs = {}
     if inputText == nil then
         return parsedInputs
     end
-    for i = 1, #inputText do
+    local i = 1
+    while i <= #inputText do
         local char = inputText:sub(i, i)
-        table.insert(parsedInputs, { "raw", char })
-        if (string.byte(char) >= 32 and string.byte(char) <= 126) then
-            table.insert(parsedInputs, { "char", char })
-        end
-        local button, x, y, action = inputText:sub(i):match("^\27%[<(%d+);(%d+);(%d+)([Mm])")
-        if button then
-            table.insert(parsedInputs, { "mouse", tonumber(button), tonumber(x), tonumber(y), action })
-        end
-        if (string.byte(char) == 27) then
-            table.insert(parsedInputs, { "esc", char })
+        local funcCode, x, y, action = inputText:match("^\27%[<(%d+);(%d+);(%d+)([Mm])", i)
+        if funcCode then
+            table.insert(parsedInputs, Term.decodeMouseEvent(tonumber(funcCode), tonumber(x), tonumber(y), action))
+            i = i + #string.match(inputText, "^\27%[<%d+;%d+;%d+[Mm]", i)
+        else
+            if (string.byte(char) >= 32 and string.byte(char) <= 126) then
+                table.insert(parsedInputs, { type = "char", char = char })
+            end
+            i = i + 1
         end
     end
     return parsedInputs
@@ -33,13 +79,10 @@ function Term.runApp(updateFunction, renderFunction)
             if #Term.internalInputBuffer > 0 then
                 inputText = inputText .. Term.read(#Term.internalInputBuffer)
             end
-
             local parsedInputs = Term.parseInput(inputText)
-
             if not updateFunction(parsedInputs) then
                 break
             end
-
             renderFunction()
         end
     end
