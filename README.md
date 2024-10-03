@@ -14,10 +14,11 @@ luajit main.lua
 ```
 
 ## Planned features
-- [x] General terminal setup and cleanup with alternate screen buffer
-- [ ] Mouse support
-- [ ] Keyboard navigation
+- [ ] Canvas
+- [ ] Pencil tool
 - [ ] Saving and loading ascii art
+- [ ] Character palette
+- [ ] Eraser tool
 - [ ] Line tool
 - [ ] Rectangle tool
 - [ ] Circle tool
