@@ -13,6 +13,9 @@ cd ASCII-mate
 luajit main.lua
 ```
 
+## Demo
+![Demo](docs/media/demo.gif)
+
 ## Planned features
 - [x] Canvas
 - [x] Pencil tool
