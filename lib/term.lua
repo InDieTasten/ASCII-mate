@@ -1,6 +1,8 @@
 Term = {}
 Term.internalInputBuffer = ""
 Term.internalOutputBuffer = ""
+Term.width = 0
+Term.height = 0
 
 --- Decodes mouse scroll, move, press and release events from xterm
 --- according to DECSET 1006
@@ -77,7 +79,7 @@ function Term.runApp(updateFunction, renderFunction)
     Term.enableMouseEvents()
     local function main()
         while true do
-            local inputText = Term.readWithTimeout(1, 0.05)
+            local inputText = Term.readWithTimeout(1, 0.01)
             if #Term.internalInputBuffer > 0 then
                 inputText = inputText .. Term.read(#Term.internalInputBuffer)
             end
@@ -214,30 +216,29 @@ function Term.readWithTimeout(n, timeout)
     end
 
     -- Here we wait for the timeout to expire. This is the time frame in which users can queue up input.
-    os.execute("/bin/sleep " .. timeout)
+    --os.execute("/bin/sleep " .. timeout)
     -- Before we try to read form the input buffer, we need to make sure we can receive something immediately, if the user has not queued anything up.
     -- We use the cursor position request for this.
-    io.write("\27[6n")
+    io.write("\27\55\27[999;999H\27[6n\27\56")
     io.flush()
-    local escapedBuffer = ""
+    local buffer = ""
+    local lastEscapeIndex
     while true do
         local current = io.read(1)
-        if #escapedBuffer > 0 or current == "\27" then
-            escapedBuffer = escapedBuffer .. current
-        else
-            Term.internalInputBuffer = Term.internalInputBuffer .. current
+        buffer = buffer .. current
+        if current == "\27" then
+            lastEscapeIndex = #buffer
         end
-        if #escapedBuffer > 0 and current == "R" then
-            -- fully received response from cursor position request
-            break
+        if lastEscapeIndex then
+            local height, width = string.match(buffer, "\27%[(%d+);(%d+)R$", lastEscapeIndex)
+            if height and width then
+                Term.height = tonumber(height)
+                Term.width = tonumber(width)
+                Term.internalInputBuffer = Term.internalInputBuffer .. buffer:sub(1, lastEscapeIndex)
+                break
+            end
         end
-        if #escapedBuffer > 0 and string.find("MmABCDEFGH~", current, 1, true) then
-            -- received ansi control sequence
-            Term.internalInputBuffer = Term.internalInputBuffer .. escapedBuffer
-            escapedBuffer = ""
-        end
-        assert(#escapedBuffer < 1000, "Readback too long")
-        assert(#Term.internalInputBuffer < 1000, "Backlog too long")
+        assert(#buffer < 1000, "Readback too long: " .. buffer)
     end
 
     if #Term.internalInputBuffer < n then
