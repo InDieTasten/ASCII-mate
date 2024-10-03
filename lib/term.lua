@@ -110,14 +110,24 @@ end
 --- Clears the terminal screen
 --- This will clear the entire screen
 function Term.clear()
-    io.write("\27[2J")
+    Term.write("\27[2J")
 end
 
 --- Sets the cursor position to the specified coordinates
 --- @param x number: X position of cursor (1 indexed)
 --- @param y number: Y position of cursor (1 indexed)
 function Term.setCursorPos(x, y)
-    io.write("\27[" .. tostring(y) .. ";" .. tostring(x) .. "H")
+    Term.write("\27[" .. tostring(y) .. ";" .. tostring(x) .. "H")
+end
+
+--- Hides the cursor
+function Term.hideCursor()
+    Term.write("\27[?25l")
+end
+
+--- Shows the cursor
+function Term.showCursor()
+    Term.write("\27[?25h")
 end
 
 --- Enters raw mode for the terminal
