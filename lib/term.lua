@@ -78,12 +78,21 @@ function Term.runApp(updateFunction, renderFunction)
     Term.enterRawMode()
     Term.enableMouseEvents()
     local function main()
+        local previousWidth
+        local previousHeight
         while true do
             local inputText = Term.readWithTimeout(1, 0.01)
             if #Term.internalInputBuffer > 0 then
                 inputText = inputText .. Term.read(#Term.internalInputBuffer)
             end
             local parsedInputs = Term.parseInput(inputText)
+
+            if Term.width ~= previousWidth or Term.height ~= previousHeight then
+                previousWidth = Term.width
+                previousHeight = Term.height
+                table.insert(parsedInputs, { type = "resize", width = Term.width, height = Term.height })
+            end
+
             if not updateFunction(parsedInputs) then
                 break
             end
@@ -234,7 +243,7 @@ function Term.readWithTimeout(n, timeout)
             if height and width then
                 Term.height = tonumber(height)
                 Term.width = tonumber(width)
-                Term.internalInputBuffer = Term.internalInputBuffer .. buffer:sub(1, lastEscapeIndex)
+                Term.internalInputBuffer = Term.internalInputBuffer .. buffer:sub(1, lastEscapeIndex - 1)
                 break
             end
         end
