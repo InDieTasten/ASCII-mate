@@ -14,8 +14,8 @@ luajit main.lua
 ```
 
 ## Planned features
-- [ ] Canvas
-- [ ] Pencil tool
+- [x] Canvas
+- [x] Pencil tool
 - [ ] Saving and loading ascii art
 - [ ] Character palette
 - [ ] Eraser tool
