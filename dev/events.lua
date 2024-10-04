@@ -1,4 +1,3 @@
----@diagnostic disable-next-line: different-requires
 require("../lib/term")
 
 local lastInputs = {}
