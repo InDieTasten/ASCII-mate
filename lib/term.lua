@@ -292,4 +292,10 @@ function Term.flush()
     Term.internalOutputBuffer = ""
 end
 
+Term.tests = {
+    moduleLoads = function()
+        assert(true, "This cannot fail.")
+    end,
+}
+
 return Term

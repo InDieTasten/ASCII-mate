@@ -7,4 +7,10 @@ function TermUI.drawCanvas(termContext, canvas, x, y)
     end
 end
 
+TermUI.tests = {
+    moduleLoads = function()
+        assert(true, "This cannot fail.")
+    end,
+}
+
 return TermUI

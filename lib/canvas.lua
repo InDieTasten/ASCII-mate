@@ -27,4 +27,10 @@ function Canvas.setPixel(canvas, x, y, char)
     canvas.pixels[y][x] = char
 end
 
+Canvas.tests = {
+    moduleLoads = function()
+        assert(true, "This cannot fail.")
+    end,
+}
+
 return Canvas
