@@ -16,23 +16,6 @@ luajit main.lua
 ## Demo
 ![Demo](docs/media/demo.gif)
 
-## Planned features
-- [x] Canvas
-- [x] Pencil tool
-- [ ] Saving and loading ascii art
-- [ ] Character palette
-- [ ] Eraser tool
-- [ ] Line tool
-- [ ] Rectangle tool
-- [ ] Circle tool
-- [ ] Text tool
-- [ ] Selection
-- [ ] Copy and paste
-- [ ] Move selection
-- [ ] Fill tool
-- [ ] Animation sequencer
-- [ ] Animation playback
-
 ## Resources and references used to create this project
 - https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 - https://www.xfree86.org/current/ctlseqs.html
