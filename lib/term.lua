@@ -1,3 +1,5 @@
+local stty = require("lib/stty")
+
 Term = {}
 Term.internalInputBuffer = ""
 Term.internalOutputBuffer = ""
@@ -145,8 +147,8 @@ end
 --- This will disable echo and line buffering
 --- It will also switch to the alternate screen buffer
 function Term.enterRawMode()
-    os.execute("/bin/stty raw")
-    os.execute("/bin/stty -echo")
+    stty.enableRawMode()
+    stty.disableEcho()
     io.write("\27[?1049h")
     io.flush()
 end
@@ -157,8 +159,8 @@ end
 function Term.leaveRawMode()
     io.write("\27[?1049l")
     io.flush()
-    os.execute("/bin/stty echo")
-    os.execute("/bin/stty sane")
+    stty.enableEcho()
+    stty.disableRawMode()
 end
 
 --- Requests the cursor position from the terminal.
