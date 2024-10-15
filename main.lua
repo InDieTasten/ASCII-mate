@@ -2,10 +2,15 @@ require("lib/term")
 require("lib/canvas")
 require("lib/term-ui")
 
+local defaultCanvasWidth = 20
+local defaultCanvasHeight = 10
+
 local cursorX
 local cursorY
 
 local canvas
+local canvasX
+local canvasY
 
 local function update(inputs)
     for _, input in ipairs(inputs) do
@@ -17,10 +22,18 @@ local function update(inputs)
             cursorY = input.y
         elseif input.type == "mouse_press" then
             if canvas then
-                Canvas.setPixel(canvas, input.x, input.y, "O")
+                if input.x > canvasX and input.x <= canvasX + canvas.width and
+                    input.y > canvasY and input.y <= canvasY + canvas.height then
+                    Canvas.setPixel(canvas, input.x - canvasX, input.y - canvasY, "O")
+                end
             end
         elseif input.type == "resize" then
-            canvas = Canvas.new(Term.width, Term.height)
+            if not canvas then
+                canvas = Canvas.new(defaultCanvasWidth, defaultCanvasHeight)
+            end
+
+            canvasX = math.floor(Term.width / 2 - canvas.width / 2)
+            canvasY = math.floor(Term.height / 2 - canvas.height / 2)
         end
     end
 
@@ -31,7 +44,7 @@ local function render()
     Term.clear()
 
     if canvas then
-        TermUI.drawCanvas(Term, canvas, 1, 1)
+        TermUI.drawCanvas(Term, canvas, canvasX + 1, canvasY + 1)
     end
 
     Term.setCursorPos(1, 1)
