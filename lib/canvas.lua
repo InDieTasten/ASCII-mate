@@ -27,6 +27,19 @@ function Canvas.setPixel(canvas, x, y, char)
     canvas.pixels[y][x] = char
 end
 
+function Canvas.toText(canvas)
+    assert(type(canvas) == "table", "canvas must be a table")
+
+    local text = ""
+    for y = 1, canvas.height do
+        for x = 1, canvas.width do
+            text = text .. canvas.pixels[y][x]
+        end
+        text = text .. "\n"
+    end
+    return text
+end
+
 Canvas.tests = {
     moduleLoads = function()
         assert(true, "This cannot fail.")
