@@ -27,6 +27,40 @@ function Canvas.setPixel(canvas, x, y, char)
     canvas.pixels[y][x] = char
 end
 
+function Canvas.toText(canvas)
+    assert(type(canvas) == "table", "canvas must be a table")
+
+    local text = ""
+    for y = 1, canvas.height do
+        for x = 1, canvas.width do
+            text = text .. canvas.pixels[y][x]
+        end
+        text = text .. "\n"
+    end
+    return text
+end
+
+function Canvas.fromText(text)
+    assert(type(text) == "string", "text must be a string")
+
+    local lines = {}
+    for line in string.gmatch(text, "([^\n]+)") do
+        table.insert(lines, line)
+    end
+    local width = #lines[1]
+    local height = #lines
+    local canvas = Canvas.new(width, height)
+    for y = 1, height do
+        local line = lines[y]
+        for x = 1, width do
+            local char = line:sub(x, x)
+            Canvas.setPixel(canvas, x, y, char)
+        end
+    end
+
+    return canvas
+end
+
 Canvas.tests = {
     moduleLoads = function()
         assert(true, "This cannot fail.")
