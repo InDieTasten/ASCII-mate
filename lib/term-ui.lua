@@ -7,6 +7,13 @@ function TermUI.drawCanvas(termContext, canvas, x, y)
     end
 end
 
+function TermUI.clear(termContext, char)
+    for y = 1, termContext.height do
+        termContext.setCursorPos(1, y)
+        termContext.write(string.rep(char or " ", termContext.width))
+    end
+end
+
 TermUI.tests = {
     moduleLoads = function()
         assert(true, "This cannot fail.")
