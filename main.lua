@@ -4,12 +4,20 @@ require("lib/term-ui")
 
 local defaultCanvasWidth = 20
 local defaultCanvasHeight = 10
-local fileName = "ascii-art"
+local fileName = ({ ... })[1] or "ascii-art"
+
+local fileHandle = io.open(fileName, "r")
+local canvas
+if fileHandle then
+    local fileContents = fileHandle:read("*a")
+    fileHandle:close()
+    canvas = Canvas.fromText(fileContents)
+else
+    canvas = Canvas.new(defaultCanvasWidth, defaultCanvasHeight)
+end
 
 local cursorX
 local cursorY
-
-local canvas = Canvas.new(defaultCanvasWidth, defaultCanvasHeight)
 local canvasX
 local canvasY
 
