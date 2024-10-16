@@ -52,7 +52,7 @@ local function update(inputs)
 end
 
 local function render()
-    Term.clear()
+    TermUI.clear(Term, "+")
 
     if canvas then
         TermUI.drawCanvas(Term, canvas, canvasX + 1, canvasY + 1)
