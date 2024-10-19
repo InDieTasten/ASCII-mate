@@ -55,6 +55,21 @@ local function update(inputs)
         elseif input.type == "resize" then
             canvasX = math.floor(Term.width / 2 - canvas.width / 2)
             canvasY = math.floor(Term.height / 2 - canvas.height / 2)
+        elseif input.type == "mouse_scroll" then
+            local amplify = input.mods.shift and 3 or 1
+            if input.mods.ctrl then
+                if input.dir == "up" then
+                    canvasX = canvasX + 2 * amplify
+                elseif input.dir == "down" then
+                    canvasX = canvasX - 2 * amplify
+                end
+            else
+                if input.dir == "up" then
+                    canvasY = canvasY + 1 * amplify
+                elseif input.dir == "down" then
+                    canvasY = canvasY - 1 * amplify
+                end
+            end
         end
     end
 
