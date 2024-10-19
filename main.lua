@@ -20,6 +20,16 @@ local cursorX
 local cursorY
 local canvasX
 local canvasY
+local toolbarWidth = 12
+local tools = {
+    "Pencil",
+    "Eraser",
+    "Fill",
+    "Line",
+    "Rectangle",
+    "Ellipse",
+}
+local selectedTool = 1
 
 local function update(inputs)
     for _, input in ipairs(inputs) do
@@ -54,17 +64,33 @@ end
 local function render()
     TermUI.clear(Term, "+")
 
+    --canvas area
     if canvas then
         TermUI.drawCanvas(Term, canvas, canvasX + 1, canvasY + 1)
     end
 
+    -- debug info
     Term.setCursorPos(1, 1)
     Term.write("Press Q to quit.")
-
     Term.setCursorPos(1, 2)
     Term.write("Dimensions: " .. Term.width .. "x" .. Term.height)
 
-    if cursorX and cursorY then
+    -- toolbar
+    TermUI.fillRect(Term, Term.width - toolbarWidth + 1, 1, toolbarWidth, Term.height, " ")
+    TermUI.fillRect(Term, Term.width - toolbarWidth, 1, 1, Term.height, "|")
+    Term.setCursorPos(Term.width - toolbarWidth + 1, 1)
+    Term.write("TOOLS")
+    for i, tool in ipairs(tools) do
+        Term.setCursorPos(Term.width - toolbarWidth + 1, i + 1)
+        if i == selectedTool then
+            Term.write("> ")
+        else
+            Term.write("  ")
+        end
+        Term.write(tool)
+    end
+
+    if cursorX and cursorY and cursorX < Term.width - toolbarWidth then
         Term.setCursorPos(cursorX, cursorY)
         Term.write("X")
     end

@@ -14,6 +14,13 @@ function TermUI.clear(termContext, char)
     end
 end
 
+function TermUI.fillRect(termContext, x, y, width, height, char)
+    for i = 1, height do
+        termContext.setCursorPos(x, y + i - 1)
+        termContext.write(string.rep(char or " ", width))
+    end
+end
+
 TermUI.tests = {
     moduleLoads = function()
         assert(true, "This cannot fail.")
