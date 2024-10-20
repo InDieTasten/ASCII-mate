@@ -61,6 +61,22 @@ function Canvas.fromText(text)
     return canvas
 end
 
+function Canvas.resize(canvas, newWidth, newHeight)
+    assert(type(canvas) == "table", "canvas must be a table")
+    assert(type(newWidth) == "number", "newWidth must be a number")
+    assert(type(newHeight) == "number", "newHeight must be a number")
+    assert(newWidth >= 1, "newWidth must be greater than or equal to 1")
+    assert(newHeight >= 1, "newHeight must be greater than or equal to 1")
+
+    local newCanvas = Canvas.new(newWidth, newHeight)
+    for y = 1, math.min(canvas.height, newHeight) do
+        for x = 1, math.min(canvas.width, newWidth) do
+            newCanvas.pixels[y][x] = canvas.pixels[y][x]
+        end
+    end
+    return newCanvas
+end
+
 Canvas.tests = {
     moduleLoads = function()
         assert(true, "This cannot fail.")
