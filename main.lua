@@ -20,6 +20,7 @@ local cursorX
 local cursorY
 local canvasX
 local canvasY
+local resizing = false
 local toolbarWidth = 12
 local tools = {
     "Pencil",
@@ -47,11 +48,23 @@ local function update(inputs)
         elseif input.type == "mouse_move" then
             cursorX = input.x
             cursorY = input.y
+
+            if resizing and input.button == 0 then
+                local newWidth = input.x - canvasX - 1
+                local newHeight = input.y - canvasY - 1
+                if newWidth >= 1 and newHeight >= 1 then
+                    canvas = Canvas.resize(canvas, newWidth, newHeight)
+                end
+            end
         elseif input.type == "mouse_press" then
             if input.x > canvasX and input.x <= canvasX + canvas.width and
                 input.y > canvasY and input.y <= canvasY + canvas.height then
                 Canvas.setPixel(canvas, input.x - canvasX, input.y - canvasY, "O")
+            elseif input.x == canvasX + canvas.width + 1 and input.y == canvasY + canvas.height + 1 then
+                resizing = true
             end
+        elseif input.type == "mouse_release" then
+            resizing = false
         elseif input.type == "resize" then
             canvasX = math.floor(Term.width / 2 - canvas.width / 2)
             canvasY = math.floor(Term.height / 2 - canvas.height / 2)
@@ -80,9 +93,9 @@ local function render()
     TermUI.clear(Term, "+")
 
     --canvas area
-    if canvas then
-        TermUI.drawCanvas(Term, canvas, canvasX + 1, canvasY + 1)
-    end
+    TermUI.drawCanvas(Term, canvas, canvasX + 1, canvasY + 1)
+    Term.setCursorPos(canvasX + canvas.width + 1, canvasY + canvas.height + 1)
+    Term.write("%")
 
     -- debug info
     Term.setCursorPos(1, 1)
