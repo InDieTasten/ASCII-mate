@@ -16,21 +16,33 @@ else
     canvas = Canvas.new(defaultCanvasWidth, defaultCanvasHeight)
 end
 
-local cursorX
-local cursorY
 local canvasX
 local canvasY
 local resizing = false
 local toolbarWidth = 12
 local tools = {
-    "Pencil",
-    "Eraser",
-    "Fill",
-    "Line",
-    "Rectangle",
-    "Ellipse",
+    {
+        name = "Pencil",
+        char = "O"
+    },
+    {
+        name = "Eraser"
+    },
+    {
+        name = "Fill"
+    },
+    {
+        name = "Line"
+    },
+    {
+        name = "Rectangle"
+    },
+    {
+        name = "Ellipse"
+    }
 }
-local selectedTool = 1
+local pencil = 1
+local selectedTool = pencil
 
 local function update(inputs)
     for _, input in ipairs(inputs) do
@@ -46,25 +58,38 @@ local function update(inputs)
                 error("Could not open file for writing.")
             end
         elseif input.type == "mouse_move" then
-            cursorX = input.x
-            cursorY = input.y
-
             if resizing and input.button == 0 then
                 local newWidth = input.x - canvasX - 1
                 local newHeight = input.y - canvasY - 1
                 if newWidth >= 1 and newHeight >= 1 then
                     canvas = Canvas.resize(canvas, newWidth, newHeight)
                 end
+            elseif selectedTool == pencil and input.button == 0 then -- pencil
+                local x = input.x - canvasX
+                local y = input.y - canvasY
+                if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
+                    Canvas.setPixel(canvas, x, y, tools[pencil].char)
+                end
             end
         elseif input.type == "mouse_press" then
-            if input.x > canvasX and input.x <= canvasX + canvas.width and
-                input.y > canvasY and input.y <= canvasY + canvas.height then
-                Canvas.setPixel(canvas, input.x - canvasX, input.y - canvasY, "O")
-            elseif input.x == canvasX + canvas.width + 1 and input.y == canvasY + canvas.height + 1 then
+            if input.x == canvasX + canvas.width + 1 and input.y == canvasY + canvas.height + 1 then
                 resizing = true
+            elseif selectedTool == pencil and input.button == 0 then
+                local x = input.x - canvasX
+                local y = input.y - canvasY
+                if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
+                    Canvas.setPixel(canvas, x, y, tools[pencil].char)
+                end
             end
         elseif input.type == "mouse_release" then
             resizing = false
+            if selectedTool == pencil and input.button == 0 then -- pencil
+                local x = input.x - canvasX
+                local y = input.y - canvasY
+                if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
+                    Canvas.setPixel(canvas, x, y, tools[pencil].char)
+                end
+            end
         elseif input.type == "resize" then
             canvasX = math.floor(Term.width / 2 - canvas.width / 2)
             canvasY = math.floor(Term.height / 2 - canvas.height / 2)
@@ -108,6 +133,7 @@ local function render()
     TermUI.fillRect(Term, Term.width - toolbarWidth, 1, 1, Term.height, "|")
     Term.setCursorPos(Term.width - toolbarWidth + 1, 1)
     Term.write("TOOLS")
+
     for i, tool in ipairs(tools) do
         Term.setCursorPos(Term.width - toolbarWidth + 1, i + 1)
         if i == selectedTool then
@@ -115,13 +141,9 @@ local function render()
         else
             Term.write("  ")
         end
-        Term.write(tool)
+        Term.write(tool.name)
     end
 
-    if cursorX and cursorY and cursorX < Term.width - toolbarWidth then
-        Term.setCursorPos(cursorX, cursorY)
-        Term.write("X")
-    end
     Term.flush()
 end
 
