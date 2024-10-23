@@ -27,6 +27,17 @@ function Canvas.setPixel(canvas, x, y, char)
     canvas.pixels[y][x] = char
 end
 
+function Canvas.trySetPixel(canvas, x, y, char)
+    assert(type(canvas) == "table", "canvas must be a table")
+    assert(type(x) == "number", "x must be a number")
+    assert(type(y) == "number", "y must be a number")
+    assert(type(char) == "string", "char must be a string")
+
+    if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
+        canvas.pixels[y][x] = char
+    end
+end
+
 function Canvas.toText(canvas)
     assert(type(canvas) == "table", "canvas must be a table")
 
