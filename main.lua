@@ -42,14 +42,19 @@ local tools = {
     }
 }
 local pencil = 1
+local eraser = 2
 local selectedTool = pencil
 
 local function update(inputs)
     for _, input in ipairs(inputs) do
-        if input.type == "char" and input.char == "q" then
+        if input.type == "char" and input.char == "q" then -- Q
             Term.showCursor()
             return false
-        elseif input.type == "raw" and input.hex == "13" then -- Ctrl + S
+        elseif input.type == "char" and input.char == "p" then -- P
+            selectedTool = pencil
+        elseif input.type == "char" and input.char == "e" then -- E
+            selectedTool = eraser
+        elseif input.type == "raw" and input.hex == "13" then  -- Ctrl + S
             local file = io.open(fileName, "w")
             if file then
                 file:write(Canvas.toText(canvas))
@@ -70,15 +75,29 @@ local function update(inputs)
                 if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
                     Canvas.setPixel(canvas, x, y, tools[pencil].char)
                 end
+            elseif selectedTool == eraser and input.button == 0 then -- eraser
+                local x = input.x - canvasX
+                local y = input.y - canvasY
+                if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
+                    Canvas.setPixel(canvas, x, y, " ")
+                end
             end
         elseif input.type == "mouse_press" then
             if input.x == canvasX + canvas.width + 1 and input.y == canvasY + canvas.height + 1 then
                 resizing = true
+            elseif input.x >= Term.width - toolbarWidth + 1 and input.y >= 2 and input.y <= #tools + 1 then
+                selectedTool = input.y - 1
             elseif selectedTool == pencil and input.button == 0 then
                 local x = input.x - canvasX
                 local y = input.y - canvasY
                 if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
                     Canvas.setPixel(canvas, x, y, tools[pencil].char)
+                end
+            elseif selectedTool == eraser and input.button == 0 then
+                local x = input.x - canvasX
+                local y = input.y - canvasY
+                if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
+                    Canvas.setPixel(canvas, x, y, " ")
                 end
             end
         elseif input.type == "mouse_release" then
