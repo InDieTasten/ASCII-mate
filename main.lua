@@ -16,10 +16,13 @@ else
     canvas = Canvas.new(defaultCanvasWidth, defaultCanvasHeight)
 end
 
+
+local palette
 local canvasX
 local canvasY
 local resizing = false
 local toolbarWidth = 12
+local paletteWidth = 12
 local tools = {
     {
         name = "Pencil",
@@ -95,8 +98,10 @@ local function update(inputs)
         elseif input.type == "mouse_press" then
             if input.x == canvasX + canvas.width + 1 and input.y == canvasY + canvas.height + 1 then
                 resizing = true
-            elseif input.x >= Term.width - toolbarWidth + 1 and input.y >= 2 and input.y <= #tools + 1 then
-                selectedTool = input.y - 1
+            elseif input.x >= Term.width - toolbarWidth + 1 and input.y >= 3 and input.y <= #tools + 2 then
+                selectedTool = input.y - 2
+            elseif palette[input.x] and palette[input.x][input.y] and input.button == 0 then
+                tools[selectedTool].char = palette[input.x][input.y]
             elseif selectedTool == pencil and input.button == 0 then
                 local x = input.x - canvasX
                 local y = input.y - canvasY
@@ -143,6 +148,19 @@ local function update(inputs)
         elseif input.type == "resize" then
             canvasX = math.floor(Term.width / 2 - canvas.width / 2)
             canvasY = math.floor(Term.height / 2 - canvas.height / 2)
+            palette = {}
+            for c = 32, 126 do
+                local column = 0
+                if c >= 96 then
+                    column = 2
+                elseif c >= 64 then
+                    column = 1
+                end
+                local x = Term.width - toolbarWidth - paletteWidth + 2 + column * 3
+                local y = c - 29 - column * 32
+                palette[x] = palette[x] or {}
+                palette[x][y] = string.char(c)
+            end
         elseif input.type == "mouse_scroll" then
             local amplify = input.mods.shift and 3 or 1
             if input.mods.ctrl then
@@ -206,16 +224,35 @@ local function render()
     TermUI.fillRect(Term, Term.width - toolbarWidth + 1, 1, toolbarWidth, Term.height, " ")
     TermUI.fillRect(Term, Term.width - toolbarWidth, 1, 1, Term.height, "|")
     Term.setCursorPos(Term.width - toolbarWidth + 1, 1)
-    Term.write("TOOLS")
-
+    Term.write("   TOOLS")
+    TermUI.fillRect(Term, Term.width - toolbarWidth + 1, 2, toolbarWidth, 1, "-")
     for i, tool in ipairs(tools) do
-        Term.setCursorPos(Term.width - toolbarWidth + 1, i + 1)
+        Term.setCursorPos(Term.width - toolbarWidth + 1, i + 2)
         if i == selectedTool then
             Term.write("> ")
         else
             Term.write("  ")
         end
         Term.write(tool.name)
+    end
+
+    -- palette
+    TermUI.fillRect(Term, Term.width - toolbarWidth - paletteWidth, 1, paletteWidth, Term.height, " ")
+    TermUI.fillRect(Term, Term.width - toolbarWidth - paletteWidth - 1, 1, 1, Term.height, "|")
+    Term.setCursorPos(Term.width - toolbarWidth - paletteWidth, 1)
+    Term.write("  PALETTE")
+    TermUI.fillRect(Term, Term.width - toolbarWidth - paletteWidth, 2, paletteWidth, 1, "-")
+    for x, v in pairs(palette) do
+        for y, c in pairs(v) do
+            if x >= 1 and x <= Term.width and y >= 1 and y <= Term.height then
+                if tools[selectedTool].char == c then
+                    Term.setCursorPos(x - 1, y)
+                    Term.write("> <")
+                end
+                Term.setCursorPos(x, y)
+                Term.write(c)
+            end
+        end
     end
 
     Term.flush()
