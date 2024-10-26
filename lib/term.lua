@@ -79,6 +79,7 @@ end
 function Term.runApp(updateFunction, renderFunction)
     Term.enterRawMode()
     Term.enableMouseEvents()
+    Term.hideCursor()
     local function main()
         local previousWidth
         local previousHeight
@@ -103,9 +104,10 @@ function Term.runApp(updateFunction, renderFunction)
     end
 
     local status = xpcall(main, function(err)
+        Term.showCursor()
+        Term.disableMouseEvents()
         Term.flush()
         Term.leaveRawMode()
-        Term.disableMouseEvents()
         local traceback = debug.traceback()
         io.stderr:write(err .. "\n" .. traceback .. "\n")
         if os.getenv("DEBUG") == "1" then
@@ -114,6 +116,7 @@ function Term.runApp(updateFunction, renderFunction)
     end)
 
     if status then
+        Term.showCursor()
         Term.flush()
         Term.leaveRawMode()
         Term.disableMouseEvents()

@@ -52,8 +52,7 @@ local selectedTool = pencil
 
 local function update(inputs)
     for _, input in ipairs(inputs) do
-        if input.type == "char" and input.char == "q" then -- Q
-            Term.showCursor()
+        if input.type == "char" and input.char == "q" then     -- Q
             return false
         elseif input.type == "char" and input.char == "p" then -- P
             selectedTool = pencil
@@ -258,5 +257,4 @@ local function render()
     Term.flush()
 end
 
-Term.hideCursor()
 Term.runApp(update, render)
