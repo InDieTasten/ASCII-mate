@@ -32,22 +32,18 @@ local tools = {
         name = "Eraser"
     },
     {
-        name = "Fill"
-    },
-    {
-        name = "Line"
-    },
-    {
         name = "Rectangle",
         char = "+"
     },
     {
-        name = "Ellipse"
+        name = "Fill",
+        char = "."
     }
 }
 local pencil = 1
 local eraser = 2
-local rectangle = 5
+local rectangle = 3
+local fill = 4
 local selectedTool = pencil
 
 local function update(inputs)
@@ -115,6 +111,12 @@ local function update(inputs)
                 end
             elseif selectedTool == rectangle and input.button == 0 then
                 tools[rectangle].start = { input.x - canvasX, input.y - canvasY }
+            elseif selectedTool == fill and input.button == 0 then
+                local x = input.x - canvasX
+                local y = input.y - canvasY
+                if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
+                    Canvas.fill(canvas, x, y, tools[fill].char)
+                end
             end
         elseif input.type == "mouse_release" then
             resizing = false

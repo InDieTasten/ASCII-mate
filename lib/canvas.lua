@@ -88,6 +88,32 @@ function Canvas.resize(canvas, newWidth, newHeight)
     return newCanvas
 end
 
+function Canvas.fill(canvas, x, y, char)
+    assert(type(canvas) == "table", "canvas must be a table")
+    assert(type(x) == "number", "x must be a number")
+    assert(type(y) == "number", "y must be a number")
+    assert(type(char) == "string", "char must be a string")
+    assert(x >= 1, "x must be greater than or equal to 1")
+    assert(x <= canvas.width, "x must be less than or equal to the canvas width")
+    assert(y >= 1, "y must be greater than or equal to 1")
+    assert(y <= canvas.height, "y must be less than or equal to the canvas height")
+
+    local oldChar = canvas.pixels[y][x]
+    canvas.pixels[y][x] = char
+    if canvas.pixels[y - 1] and canvas.pixels[y - 1][x] == oldChar then
+        Canvas.fill(canvas, x, y - 1, char)
+    end
+    if canvas.pixels[y + 1] and canvas.pixels[y + 1][x] == oldChar then
+        Canvas.fill(canvas, x, y + 1, char)
+    end
+    if canvas.pixels[y][x - 1] == oldChar then
+        Canvas.fill(canvas, x - 1, y, char)
+    end
+    if canvas.pixels[y][x + 1] == oldChar then
+        Canvas.fill(canvas, x + 1, y, char)
+    end
+end
+
 Canvas.tests = {
     moduleLoads = function()
         assert(true, "This cannot fail.")
