@@ -84,7 +84,7 @@ function Term.runApp(updateFunction, renderFunction)
         local previousWidth
         local previousHeight
         while true do
-            local inputText = Term.readWithTimeout(1, 0.01)
+            local inputText = Term.tryRead(1)
             if #Term.internalInputBuffer > 0 then
                 inputText = inputText .. Term.read(#Term.internalInputBuffer)
             end
@@ -107,6 +107,7 @@ function Term.runApp(updateFunction, renderFunction)
         Term.showCursor()
         Term.disableMouseEvents()
         Term.flush()
+        Term.tryRead(1)
         Term.leaveRawMode()
         local traceback = debug.traceback()
         io.stderr:write(err .. "\n" .. traceback .. "\n")
@@ -117,9 +118,10 @@ function Term.runApp(updateFunction, renderFunction)
 
     if status then
         Term.showCursor()
-        Term.flush()
-        Term.leaveRawMode()
         Term.disableMouseEvents()
+        Term.flush()
+        Term.tryRead(1)
+        Term.leaveRawMode()
     end
 end
 
@@ -216,12 +218,10 @@ function Term.read(n)
     return input
 end
 
---- Reads n characters from the stdin with a timeout.
---- This will delay the input by the timeout duration.
+--- Reads n characters from the stdin when input is available.
 --- @param n number: number of characters to read
---- @param timeout number: in seconds
 --- @return string? input: input read from string, or nil, if we ran into the specified timeout
-function Term.readWithTimeout(n, timeout)
+function Term.tryRead(n)
     assert(n > 0, "n must be greater than 0")
 
     -- If we have enough characters in the backlog, we can return them immediately.
