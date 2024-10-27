@@ -10,8 +10,20 @@ A CLI tool with mouse support for drawing ascii art and animations
 ```bash
 git clone git@github.com:InDieTasten/ASCII-mate.git
 cd ASCII-mate
-luajit main.lua
+lua main.lua
 ```
+
+### Editing files
+
+Creating or editing a file called `cat.ascii`:
+```bash
+lua main.lua cat.ascii
+```
+
+## Controls
+- `Q` to quit
+- `Ctrl` + `S` to save
+
 
 ## Demo
 ![Demo](docs/media/demo.gif)
