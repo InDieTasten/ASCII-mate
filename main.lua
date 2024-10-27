@@ -215,12 +215,6 @@ local function render()
     Term.setCursorPos(canvasX + canvas.width + 1, canvasY + canvas.height + 1)
     Term.write("%")
 
-    -- debug info
-    Term.setCursorPos(1, 1)
-    Term.write("Press Q to quit.")
-    Term.setCursorPos(1, 2)
-    Term.write("Dimensions: " .. Term.width .. "x" .. Term.height)
-
     -- toolbar
     TermUI.fillRect(Term, Term.width - toolbarWidth + 1, 1, toolbarWidth, Term.height, " ")
     TermUI.fillRect(Term, Term.width - toolbarWidth, 1, 1, Term.height, "|")
