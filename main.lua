@@ -51,6 +51,18 @@ local fill = 4
 local globalFill = 5
 local selectedTool = pencil
 
+local function calculateToolbarWidth()
+    local maxWidth = 0
+    for _, tool in ipairs(tools) do
+        if #tool.name > maxWidth then
+            maxWidth = #tool.name
+        end
+    end
+    return maxWidth + 4
+end
+
+toolbarWidth = calculateToolbarWidth()
+
 local function update(inputs)
     for _, input in ipairs(inputs) do
         if input.type == "char" and input.char == "q" then     -- Q
