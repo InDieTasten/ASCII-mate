@@ -38,12 +38,17 @@ local tools = {
     {
         name = "Fill",
         char = "."
+    },
+    {
+        name = "Global Fill",
+        char = "."
     }
 }
 local pencil = 1
 local eraser = 2
 local rectangle = 3
 local fill = 4
+local globalFill = 5
 local selectedTool = pencil
 
 local function update(inputs)
@@ -115,7 +120,13 @@ local function update(inputs)
                 local x = input.x - canvasX
                 local y = input.y - canvasY
                 if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
-                    Canvas.fill(canvas, x, y, tools[fill].char)
+                    Canvas.fill(canvas, x, y, tools[fill].char, false)
+                end
+            elseif selectedTool == globalFill and input.button == 0 then
+                local x = input.x - canvasX
+                local y = input.y - canvasY
+                if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
+                    Canvas.fill(canvas, x, y, tools[globalFill].char, true)
                 end
             end
         elseif input.type == "mouse_release" then
