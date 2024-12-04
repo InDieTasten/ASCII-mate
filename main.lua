@@ -38,13 +38,30 @@ local tools = {
     {
         name = "Fill",
         char = "."
+    },
+    {
+        name = "Global Fill",
+        char = "."
     }
 }
 local pencil = 1
 local eraser = 2
 local rectangle = 3
 local fill = 4
+local globalFill = 5
 local selectedTool = pencil
+
+local function calculateToolbarWidth()
+    local maxWidth = 0
+    for _, tool in ipairs(tools) do
+        if #tool.name > maxWidth then
+            maxWidth = #tool.name
+        end
+    end
+    return maxWidth + 4
+end
+
+toolbarWidth = calculateToolbarWidth()
 
 local function update(inputs)
     for _, input in ipairs(inputs) do
@@ -115,7 +132,13 @@ local function update(inputs)
                 local x = input.x - canvasX
                 local y = input.y - canvasY
                 if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
-                    Canvas.fill(canvas, x, y, tools[fill].char)
+                    Canvas.fill(canvas, x, y, tools[fill].char, false)
+                end
+            elseif selectedTool == globalFill and input.button == 0 then
+                local x = input.x - canvasX
+                local y = input.y - canvasY
+                if x >= 1 and x <= canvas.width and y >= 1 and y <= canvas.height then
+                    Canvas.fill(canvas, x, y, tools[globalFill].char, true)
                 end
             end
         elseif input.type == "mouse_release" then
