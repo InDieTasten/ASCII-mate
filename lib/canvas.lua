@@ -126,10 +126,4 @@ function Canvas.fill(canvas, x, y, char, global)
     end
 end
 
-Canvas.tests = {
-    moduleLoads = function()
-        assert(true, "This cannot fail.")
-    end,
-}
-
 return Canvas

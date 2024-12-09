@@ -13,11 +13,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install lua 5.4
+    - name: Install lua 5.4 and Busted
       run: |
         sudo apt-get update
-        sudo apt-get install -y lua5.4
+        sudo apt-get install -y lua5.4 luarocks
+        sudo luarocks install busted
 
     - name: Run tests
       run: |
-        lua test.lua
+        busted

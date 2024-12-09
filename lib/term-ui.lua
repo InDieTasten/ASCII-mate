@@ -21,10 +21,4 @@ function TermUI.fillRect(termContext, x, y, width, height, char)
     end
 end
 
-TermUI.tests = {
-    moduleLoads = function()
-        assert(true, "This cannot fail.")
-    end,
-}
-
 return TermUI
