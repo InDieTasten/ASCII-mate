@@ -1,5 +1,5 @@
 {
   "name": "ASCII-mate Development Container",
-  "image": "alpine:latest",
-  "postCreateCommand": "apk update && apk add lua5.4 luajit luarocks && luarocks install busted"
+  "image": "ubuntu:latest",
+  "postCreateCommand": "apt-get update && apt-get install -y lua5.4 luajit luarocks && luarocks install busted"
 }
