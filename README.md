@@ -31,3 +31,14 @@ lua main.lua cat.ascii
 ## Resources and references used to create this project
 - https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 - https://www.xfree86.org/current/ctlseqs.html
+
+## GitHub Codespaces Development
+
+You can use GitHub Codespaces to develop this project. The dev container configuration includes the following preinstalled tools:
+
+- lua
+- luajit
+- luarocks
+- busted
+
+To get started, simply open the repository in a GitHub Codespace.
