@@ -1,19 +1,5 @@
 {
   "name": "ASCII-mate Development Container",
-  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
-  "features": {
-    "ghcr.io/devcontainers/features/lua:1": {
-      "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/luajit:1": {
-      "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/luarocks:1": {
-      "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/busted:1": {
-      "version": "latest"
-    }
-  },
-  "postCreateCommand": "sudo apt-get update && sudo apt-get install -y lua5.4 luarocks && sudo luarocks install busted"
+  "image": "alpine:latest",
+  "postCreateCommand": "apk update && apk add lua5.4 luajit luarocks && luarocks install busted"
 }
