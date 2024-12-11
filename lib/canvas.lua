@@ -88,7 +88,7 @@ function Canvas.resize(canvas, newWidth, newHeight)
     return newCanvas
 end
 
-function Canvas.fill(canvas, x, y, char)
+function Canvas.fill(canvas, x, y, char, global)
     assert(type(canvas) == "table", "canvas must be a table")
     assert(type(x) == "number", "x must be a number")
     assert(type(y) == "number", "y must be a number")
@@ -97,20 +97,32 @@ function Canvas.fill(canvas, x, y, char)
     assert(x <= canvas.width, "x must be less than or equal to the canvas width")
     assert(y >= 1, "y must be greater than or equal to 1")
     assert(y <= canvas.height, "y must be less than or equal to the canvas height")
+    assert(type(global) == "boolean", "global must be a boolean")
 
-    local oldChar = canvas.pixels[y][x]
-    canvas.pixels[y][x] = char
-    if canvas.pixels[y - 1] and canvas.pixels[y - 1][x] == oldChar then
-        Canvas.fill(canvas, x, y - 1, char)
-    end
-    if canvas.pixels[y + 1] and canvas.pixels[y + 1][x] == oldChar then
-        Canvas.fill(canvas, x, y + 1, char)
-    end
-    if canvas.pixels[y][x - 1] == oldChar then
-        Canvas.fill(canvas, x - 1, y, char)
-    end
-    if canvas.pixels[y][x + 1] == oldChar then
-        Canvas.fill(canvas, x + 1, y, char)
+    if global then
+        local oldChar = canvas.pixels[y][x]
+        for i = 1, canvas.height do
+            for j = 1, canvas.width do
+                if canvas.pixels[i][j] == oldChar then
+                    canvas.pixels[i][j] = char
+                end
+            end
+        end
+    else
+        local oldChar = canvas.pixels[y][x]
+        canvas.pixels[y][x] = char
+        if canvas.pixels[y - 1] and canvas.pixels[y - 1][x] == oldChar then
+            Canvas.fill(canvas, x, y - 1, char, false)
+        end
+        if canvas.pixels[y + 1] and canvas.pixels[y + 1][x] == oldChar then
+            Canvas.fill(canvas, x, y + 1, char, false)
+        end
+        if canvas.pixels[y][x - 1] == oldChar then
+            Canvas.fill(canvas, x - 1, y, char, false)
+        end
+        if canvas.pixels[y][x + 1] == oldChar then
+            Canvas.fill(canvas, x + 1, y, char, false)
+        end
     end
 end
 
