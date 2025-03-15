@@ -1,5 +1,5 @@
-# ASCII-mate
-A CLI tool with mouse support for drawing ascii art and animations
+# ANSI-mate
+A CLI tool with mouse support for drawing ansi art and animations
 
 ## Prerequisites
 - /bin/stty (exists in pretty much all posix systems)
@@ -8,16 +8,16 @@ A CLI tool with mouse support for drawing ascii art and animations
 
 ## Usage
 ```bash
-git clone git@github.com:InDieTasten/ASCII-mate.git
-cd ASCII-mate
+git clone git@github.com:InDieTasten/ANSI-mate.git
+cd ANSI-mate
 lua main.lua
 ```
 
 ### Editing files
 
-Creating or editing a file called `cat.ascii`:
+Creating or editing a file called `cat.ansi`:
 ```bash
-lua main.lua cat.ascii
+lua main.lua cat.ansi
 ```
 
 ## Controls
