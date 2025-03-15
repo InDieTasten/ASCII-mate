@@ -26,7 +26,7 @@ lua main.lua cat.ascii
 
 
 ## Demo
-![Demo](docs/media/demo.gif)
+![Demo](docs/media/demo-v1.gif)
 
 ## Resources and references used to create this project
 - https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
